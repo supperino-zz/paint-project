@@ -1,51 +1,39 @@
 from tkinter import *
-color = "#000000"
 
-def red():
-  global color
-  color = "#ff0000"
+class tools:
+    def __init__(self, Canvas=None):
+        self.Canvas = Canvas
+        self.left_but = "up"
+        self.x_pos, self.y_pos = None, None
 
-def green():
-  global color
-  color = "#228b22"
+    def left_but_down(self, event=None):
+        self.left_but = "down"
+        print(event.x, event.y)
+ 
+    def left_but_up(self, event=None):
+        self.left_but = "up"
+        self.x_pos = None
+        self.y_pos = None
+ 
+    def motion(self, event=None):
+            self.pencil_draw(event)
+ 
+    def pencil_draw(self, event=None):
+        if self.left_but == "down":
+            if self.x_pos is not None and self.y_pos is not None:
+                event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE)
+            self.x_pos = event.x
+            self.y_pos = event.y
 
-def black():
-  global color
-  color = "#000000"
+class paint:
+    def __init__(self, root):
+        drawing_area = Canvas(root)
+        drawing_area.pack()
+        self.tools = tools(drawing_area)
+        drawing_area.bind("<Motion>", self.tools.motion)
+        drawing_area.bind("<ButtonPress-1>", self.tools.left_but_down)
+        drawing_area.bind("<ButtonRelease-1>", self.tools.left_but_up)  
 
-def blue():
-  global color
-  color = "#0000ff"
-
-def draw(x1, y1, x2, y2):
-  w.create_oval(x1, y1, x2, y2, fill=color, outline = color)
-
-def motion(event):
-  x1, y1 = (event.x), (event.y)
-  x2, y2 = (event.x), (event.y)
-  draw(x1, y1, x2, y2)
-  return
-
-master = Tk()
-master.title("Painthon")
-
-w = Canvas(master, width=1000, height=500)
-w.bind('<B1-Motion>', motion)
-w.pack()
-
-bottomframe = Frame(master)
-bottomframe.pack(side = BOTTOM)
-
-redbutton = Button(bottomframe, text="Red", fg="red", command = red)
-redbutton.pack(side = LEFT)
-
-greenbutton = Button(bottomframe, text="Green", fg="green", command = green)
-greenbutton.pack(side = LEFT)
-
-bluebutton = Button(bottomframe, text="Blue", fg="blue", command = blue)
-bluebutton.pack(side = LEFT)
-
-blackbutton = Button(bottomframe, text="Black", fg="black", command = black)
-blackbutton.pack(side = RIGHT)
-
+root = Tk()
+paint_application = paint(root)
 mainloop()
