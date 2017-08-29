@@ -31,11 +31,9 @@ class brush(tool):
             self.y_pos = event.y
 
 class rectangle(tool):
-    def left_but_down(self, event=None):
-        self.left_but = "down"
-        self.x1_line_pt = event.x
-        self.y1_line_pt = event.y
- 
+    #aqui eu to re-escrevendo o mesmo metodo de botao 
+    #porque precisava de alguem pra chamar rectangle_draw.
+    #fiquei com preguiça de pensar em um jeito bonito pra arrumar isso.
     def left_but_up(self, event=None):
         self.left_but = "up"
         self.x_pos,self.y_pos = None, None
