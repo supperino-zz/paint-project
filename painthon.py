@@ -29,10 +29,8 @@ class Tool:
 		self.x_pos = event.x
 		self.y_pos = event.y
 
-	def setColor(self):
-		self.color = "red" #teste
-		print("Mudou cor")
-		print(self.color)
+	def setColor(self, color):
+		self.color = color
 
 class Brush(Tool):
 	def motion(self, event=None):
@@ -110,8 +108,10 @@ class Paint:
 	def __init__(self):
 		self.root = Tk()
 		self.root.title("Painthon")
-		self.frame = Frame(self.root, borderwidth = 1)
-		self.frame.pack()
+		self.frame = Frame(self.root)
+		self.frame.pack(side = RIGHT)
+		self.frame2 = Frame(self.root)
+		self.frame2.pack(side = LEFT,  fill = BOTH)
 		self.drawing_area = Canvas(self.frame, borderwidth = 2, relief=SUNKEN, width=1000, height=500, background = "white")
 		self.drawing_area.pack(side = RIGHT)
 		self.tool = Tool(self.drawing_area)
@@ -119,38 +119,52 @@ class Paint:
 
 	def select_tool(self, x):
 		if x == 1 :
-			self.tool = Rectangle(self.drawing_area)
-		elif x == 2 :
 			self.tool = Brush(self.drawing_area)
-		elif x == 3 :
-			self.tool = Circle(self.drawing_area)
-		else :
+		elif x == 2 :
 			self.tool = Eraser(self.drawing_area)
+		elif x == 3 :
+			self.tool = Rectangle(self.drawing_area)
+		else :
+			self.tool = Circle(self.drawing_area)
 		self.tool.run(self.drawing_area)
 
+	def makeColorButton(self, color, frame):
+		colorbutton = Button(frame, text="", bg = color, command = lambda: self.tool.setColor(color))
+		colorbutton.configure(width = 1, height = 1)
+		colorbutton.pack(side=BOTTOM, anchor=SE)
+		return colorbutton
+
+	def makeToolButton(self, frame, x, image):
+		toolbutton = Button(frame, command = lambda: self.select_tool(x))
+		toolbutton.configure(image = image)
+		toolbutton.pack(side=TOP, anchor=NE)
+		return toolbutton
+
 	def runGUI(self):
-		#self.brushicon = PhotoImage(file = "~/Pictures/brush.png")
-		#self.erasericon = PhotoImage(file = "~/Pictures/eraser.png")
+		self.brushicon = PhotoImage(file = "~/Pictures/brush.png")
+		self.erasericon = PhotoImage(file = "~/Pictures/eraser.png")
+		self.circleicon = PhotoImage(file = "~/Pictures/circle.png")
+		self.recticon = PhotoImage(file = "~/Pictures/rectangle.png")
 
-		brushbutton = Button(self.frame, text="Pincel", fg="black", command = lambda: self.select_tool(2))
-		brushbutton.configure(width = 6)
-		brushbutton.pack(side=TOP, anchor=NE)
+		brushbutton = self.makeToolButton(self.frame2, 1, self.brushicon)
 
-		eraserbutton = Button(self.frame, text="Borracha", fg="black", command = lambda: self.select_tool(4))
-		eraserbutton.configure(width=6)
-		eraserbutton.pack(side=TOP, anchor=NE)
+		eraserbutton = self.makeToolButton(self.frame, 2, self.erasericon)
 
-		retbutton = Button(self.frame, text="Retângulo", fg="black", command = lambda: self.select_tool(1))
-		retbutton.pack(side=TOP, anchor=NE)
-		retbutton.configure(width=6)
+		retbutton = self.makeToolButton(self.frame, 3, self.recticon)
 
-		cirbutton = Button(self.frame, text="Círculo", fg="black", command = lambda: self.select_tool(3))
-		cirbutton.pack(side=TOP, anchor=NE)
-		cirbutton.configure(width=6)
+		cirbutton = self.makeToolButton(self.frame2, 4, self.circleicon)
 
-		'''redbutton = Button(self.frame, text="", bg = "red", command = self.tool.setColor)
-		redbutton.pack(side=TOP, anchor=NE)
-		redbutton.configure(width=3)'''
+		redbutton = self.makeColorButton("red", self.frame)		
+
+		bluebutton = self.makeColorButton("blue", self.frame2)	
+
+		yellowbutton = self.makeColorButton("yellow", self.frame)		
+
+		greenbutton = self.makeColorButton("green", self.frame2)		
+
+		blackbutton = self.makeColorButton("black", self.frame)	
+
+		whitebutton = self.makeColorButton("white", self.frame2)		
 
 paint_application = Paint()
 mainloop()
