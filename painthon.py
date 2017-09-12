@@ -1,7 +1,7 @@
 from tkinter import *
 
 class Tool:
-	def __init__(self, Canvas=None):
+	def __init__(self):
 		self.x1_line_pt, self.y1_line_pt = None, None
 		self.x2_line_pt, self.y2_line_pt = None, None
 		self.left_but = "up"
@@ -47,7 +47,6 @@ class Brush(Tool):
 		canvas.bind("<Motion>", self.motion)
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
-
 
 class Eraser(Tool):
 	def motion(self, event=None):
@@ -114,18 +113,18 @@ class Paint:
 		self.frame2.pack(side = LEFT,  fill = BOTH)
 		self.drawing_area = Canvas(self.frame, borderwidth = 2, relief=SUNKEN, width=1000, height=500, background = "white")
 		self.drawing_area.pack(side = RIGHT)
-		self.tool = Tool(self.drawing_area)
+		self.tool = Tool()
 		self.runGUI()
 
 	def select_tool(self, x):
 		if x == 1 :
-			self.tool = Brush(self.drawing_area)
+			self.tool = Brush()
 		elif x == 2 :
-			self.tool = Eraser(self.drawing_area)
+			self.tool = Eraser()
 		elif x == 3 :
-			self.tool = Rectangle(self.drawing_area)
+			self.tool = Rectangle()
 		else :
-			self.tool = Circle(self.drawing_area)
+			self.tool = Circle()
 		self.tool.run(self.drawing_area)
 
 	def makeColorButton(self, color, frame):
