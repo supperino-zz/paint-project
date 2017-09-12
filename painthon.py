@@ -140,10 +140,10 @@ class Paint:
 		return toolbutton
 
 	def runGUI(self):
-		self.brushicon = PhotoImage(file = "~/Pictures/brush.png")
-		self.erasericon = PhotoImage(file = "~/Pictures/eraser.png")
-		self.circleicon = PhotoImage(file = "~/Pictures/circle.png")
-		self.recticon = PhotoImage(file = "~/Pictures/rectangle.png")
+		self.brushicon = PhotoImage(file = "Icons/brush.png")
+		self.erasericon = PhotoImage(file = "Icons/eraser.png")
+		self.circleicon = PhotoImage(file = "Icons/circle.png")
+		self.recticon = PhotoImage(file = "Icons/rectangle.png")
 
 		brushbutton = self.makeToolButton(self.frame2, 1, self.brushicon)
 
