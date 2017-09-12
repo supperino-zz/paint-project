@@ -1,4 +1,8 @@
 from tkinter import *
+import subprocess
+import os
+import io
+from PIL import Image
 
 class Tool:
 	def __init__(self):
@@ -80,6 +84,7 @@ class Rectangle(Tool):
 			self.x2_line_pt, self.y2_line_pt,fill="",outline=self.color,
 			width=2)
 
+
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
@@ -108,13 +113,15 @@ class Paint:
 		self.root = Tk()
 		self.root.title("Painthon")
 		self.frame = Frame(self.root)
-		self.frame.pack(side = RIGHT)
+		self.frame.pack(side = LEFT, fill = BOTH)
 		self.frame2 = Frame(self.root)
 		self.frame2.pack(side = LEFT,  fill = BOTH)
-		self.drawing_area = Canvas(self.frame, borderwidth = 2, relief=SUNKEN, width=1000, height=500, background = "white")
+		self.drawing_area = Canvas(self.root, borderwidth = 2, relief=SUNKEN, width=1000, height=500, background = "white")
 		self.drawing_area.pack(side = RIGHT)
 		self.tool = Tool()
+		self.number = 1
 		self.runGUI()
+
 
 	def select_tool(self, x):
 		if x == 1 :
@@ -138,6 +145,12 @@ class Paint:
 		toolbutton.configure(image = image)
 		toolbutton.pack(side=TOP, anchor=NE)
 		return toolbutton
+	
+	def save(self):
+		ps = self.drawing_area.postscript(colormode='color')
+		img = Image.open(io.BytesIO(ps.encode('utf-8')))
+		img.save('test'+str(self.number)+'.jpg')
+		self.number = self.number + 1
 
 	def runGUI(self):
 		self.brushicon = PhotoImage(file = "Icons/brush.png")
@@ -145,9 +158,9 @@ class Paint:
 		self.circleicon = PhotoImage(file = "Icons/circle.png")
 		self.recticon = PhotoImage(file = "Icons/rectangle.png")
 
-		brushbutton = self.makeToolButton(self.frame2, 1, self.brushicon)
+		brushbutton = self.makeToolButton(self.frame, 1, self.brushicon)
 
-		eraserbutton = self.makeToolButton(self.frame, 2, self.erasericon)
+		eraserbutton = self.makeToolButton(self.frame2, 2, self.erasericon)
 
 		retbutton = self.makeToolButton(self.frame, 3, self.recticon)
 
@@ -163,7 +176,12 @@ class Paint:
 
 		blackbutton = self.makeColorButton("black", self.frame)	
 
-		whitebutton = self.makeColorButton("white", self.frame2)		
+		whitebutton = self.makeColorButton("white", self.frame2)
+
+		savebutton = Button(self.frame, text="Save", command = self.save)
+		savebutton.configure(width = 3)
+		savebutton.pack(side=BOTTOM, anchor=SE)
 
 paint_application = Paint()
+
 mainloop()
