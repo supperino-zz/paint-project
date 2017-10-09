@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import filedialog
 import subprocess
 import os
 import io
@@ -147,9 +148,10 @@ class Paint:
 		return toolbutton
 	
 	def save(self):
+		self.filename = filedialog.asksaveasfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
 		ps = self.drawing_area.postscript(colormode='color')
 		img = Image.open(io.BytesIO(ps.encode('utf-8')))
-		img.save('test'+str(self.number)+'.jpg')
+		img.save(self.filename)
 		self.number = self.number + 1
 
 	def runGUI(self):
