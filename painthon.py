@@ -110,26 +110,32 @@ class Circle(Tool):
 
 class Text(Tool):
 	def __init__(self):
-		self.entry = "tois"
+		self.entry = "primeiro"
+		self.canvas = Canvas()
 
 	def left_but_down(self, event=None):
+		if (self.entry != "primeiro"):
+			self.entry.destroy()
 		self.right_but = "down"
 		self.x1_line_pt = event.x
 		self.y1_line_pt = event.y
-		self.insert_text(event)
+		self.read_text(event)
 
-	def exit(self, event=None):
-		'''aqui deletaria a entry e colocaria um text no canvas'''
-		printf("saiu")
+	def display_text(self, event=None):
+		texto = self.entry.get()
+		self.canvas.create_text(self.x1_line_pt,self.y1_line_pt, anchor="nw", 
+								font=("Arial",15), fill="black", text = texto)
+		self.entry.destroy()
 
-	def insert_text(self, event=None):
-		self.entry = Entry(event.widget,bd=0, font=("Arial",15))
+	def read_text(self, event=None):
+		self.entry = Entry(event.widget,bd=0, font=("Arial",15), bg= "white", fg = "black")
 		self.entry.place(x= event.x, y= event.y)
+		self.entry.bind("<Return>", self.display_text)
 		self.entry.focus_force()
 
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
-		canvas.bind("<ButtonPress-2>", self.exit)
+		self.canvas = canvas
 
 class Paint:
 	def __init__(self):
