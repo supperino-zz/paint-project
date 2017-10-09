@@ -85,7 +85,6 @@ class Rectangle(Tool):
 			self.x2_line_pt, self.y2_line_pt,fill="",outline=self.color,
 			width=2)
 
-
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
@@ -107,7 +106,30 @@ class Circle(Tool):
 
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
-		canvas.bind("<ButtonRelease-1>", self.left_but_up)   
+		canvas.bind("<ButtonRelease-1>", self.left_but_up)
+
+class Text(Tool):
+	def __init__(self):
+		self.entry = "tois"
+
+	def left_but_down(self, event=None):
+		self.right_but = "down"
+		self.x1_line_pt = event.x
+		self.y1_line_pt = event.y
+		self.insert_text(event)
+
+	def exit(self, event=None):
+		'''aqui deletaria a entry e colocaria um text no canvas'''
+		printf("saiu")
+
+	def insert_text(self, event=None):
+		self.entry = Entry(event.widget,bd=0, font=("Arial",15))
+		self.entry.place(x= event.x, y= event.y)
+		self.entry.focus_force()
+
+	def run(self, canvas):
+		canvas.bind("<ButtonPress-1>", self.left_but_down)
+		canvas.bind("<ButtonPress-2>", self.exit)
 
 class Paint:
 	def __init__(self):
@@ -120,7 +142,7 @@ class Paint:
 		self.drawing_area = Canvas(self.root, borderwidth = 2, relief=SUNKEN, width=1000, height=500, background = "white")
 		self.drawing_area.pack(side = RIGHT)
 		self.tool = Tool()
-		self.number = 1
+		self.saveCounter = 1
 		self.runGUI()
 
 
@@ -131,8 +153,10 @@ class Paint:
 			self.tool = Eraser()
 		elif x == 3 :
 			self.tool = Rectangle()
-		else :
+		elif x == 4 :
 			self.tool = Circle()
+		else :
+			self.tool = Text()
 		self.tool.run(self.drawing_area)
 
 	def makeColorButton(self, color, frame):
@@ -159,6 +183,7 @@ class Paint:
 		self.erasericon = PhotoImage(file = "Icons/eraser.png")
 		self.circleicon = PhotoImage(file = "Icons/circle.png")
 		self.recticon = PhotoImage(file = "Icons/rectangle.png")
+		self.texticon = PhotoImage(file = "Icons/text.png")
 
 		brushbutton = self.makeToolButton(self.frame, 1, self.brushicon)
 
@@ -167,6 +192,8 @@ class Paint:
 		retbutton = self.makeToolButton(self.frame, 3, self.recticon)
 
 		cirbutton = self.makeToolButton(self.frame2, 4, self.circleicon)
+
+		textbutton = self.makeToolButton(self.frame, 5, self.texticon)
 
 		redbutton = self.makeColorButton("red", self.frame)		
 
@@ -181,7 +208,7 @@ class Paint:
 		whitebutton = self.makeColorButton("white", self.frame2)
 
 		savebutton = Button(self.frame, text="Save", command = self.save)
-		savebutton.configure(width = 3)
+		savebutton.configure(width = 1, height = 1)
 		savebutton.pack(side=BOTTOM, anchor=SE)
 
 paint_application = Paint()
