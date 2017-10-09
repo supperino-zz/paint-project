@@ -172,11 +172,10 @@ class Paint:
 		return toolbutton
 	
 	def save(self):
-		self.filename = filedialog.asksaveasfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+		self.filename = filedialog.asksaveasfilename(initialdir = "~/",title = "Selecione diretorio",filetypes = (("arquivo jpeg","*.jpg"),("todos os arquivos","*.*")))
 		ps = self.drawing_area.postscript(colormode='color')
 		img = Image.open(io.BytesIO(ps.encode('utf-8')))
 		img.save(self.filename)
-		self.number = self.number + 1
 
 	def runGUI(self):
 		self.brushicon = PhotoImage(file = "Icons/brush.png")
