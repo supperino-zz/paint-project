@@ -110,6 +110,7 @@ class Circle(Tool):
 
 class Text(Tool):
 	def __init__(self):
+		Tool.__init__(self)
 		self.entry = "primeiro"
 		self.canvas = Canvas()
 
@@ -124,11 +125,11 @@ class Text(Tool):
 	def display_text(self, event=None):
 		texto = self.entry.get()
 		self.canvas.create_text(self.x1_line_pt,self.y1_line_pt, anchor="nw", 
-								font=("Arial",15), fill="black", text = texto)
+								font=("Arial",15), fill=self.color, text = texto)
 		self.entry.destroy()
 
 	def read_text(self, event=None):
-		self.entry = Entry(event.widget,bd=0, font=("Arial",15), bg= "white", fg = "black")
+		self.entry = Entry(event.widget,bd=0, font=("Arial",15), bg= "white", fg = self.color)
 		self.entry.place(x= event.x, y= event.y)
 		self.entry.bind("<Return>", self.display_text)
 		self.entry.focus_force()
@@ -148,7 +149,6 @@ class Paint:
 		self.drawing_area = Canvas(self.root, borderwidth = 2, relief=SUNKEN, width=1000, height=500, background = "white")
 		self.drawing_area.pack(side = RIGHT)
 		self.tool = Tool()
-		self.saveCounter = 1
 		self.runGUI()
 
 
