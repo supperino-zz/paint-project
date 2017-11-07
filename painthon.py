@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import filedialog
-import subprocess
 import os
 import io
 from PIL import Image
@@ -13,6 +12,7 @@ class Tool:
 		self.right_but = "up"
 		self.x_pos, self.y_pos = None, None
 		self.color = "black"
+		self.width = 1
 
 	def left_but_down(self, event=None):
 		self.left_but = "down"
@@ -43,7 +43,14 @@ class Tool:
 	def run(self, canvas):
 		pass
 
+	def setWidth(self, canvas):
+		pass
+
 class Brush(Tool):
+	def __init__(self):
+		Tool.__init__(self)
+		self.width = 1
+
 	def motion(self, event=None):
 		self.pencil_draw(event)
 		self.x_pos = event.x
@@ -52,7 +59,7 @@ class Brush(Tool):
 	def pencil_draw(self, event=None):
 		if self.left_but == "down":
 			if self.x_pos is not None and self.y_pos is not None:
-				event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE, fill = self.color)
+				event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE, fill = self.color, width = self.width)
 
 	def unrun(self, canvas):
 		canvas.unbind("<Motion>")
@@ -64,7 +71,14 @@ class Brush(Tool):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
 
+	def setWidth(self, width):
+		self.width = width;
+
 class Eraser(Tool):
+	def __init__(self):
+		Tool.__init__(self)
+		self.width = 20
+
 	def motion(self, event=None):
 		self.erase(event)
 		self.x_pos = event.x
@@ -73,7 +87,7 @@ class Eraser(Tool):
 	def erase(self, event=None):
 		if self.left_but == "down":
 			if self.x_pos is not None and self.y_pos is not None:
-				event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE, fill = "white", width = 20)
+				event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE, fill = "white", width = self.width)
 
 	def unrun(self, canvas):
 		canvas.unbind("<Motion>")
@@ -85,6 +99,8 @@ class Eraser(Tool):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
 
+	def setWidth(self, width):
+		self.width = width*10;
 
 class Rectangle(Tool):
 	def left_but_up(self, event=None):
@@ -99,7 +115,7 @@ class Rectangle(Tool):
 		self.y2_line_pt):
 			event.widget.create_rectangle(self.x1_line_pt, self.y1_line_pt,
 			self.x2_line_pt, self.y2_line_pt,fill="",outline=self.color,
-			width=2)
+			width=self.width)
 
 	def unrun(self, canvas):
 		canvas.unbind("<ButtonPress-1>")
@@ -108,6 +124,9 @@ class Rectangle(Tool):
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
+	
+	def setWidth(self, width):
+		self.width = width;
 
 class Circle(Tool):
 	def left_but_up(self, event=None):
@@ -122,7 +141,7 @@ class Circle(Tool):
 		self.y2_line_pt):
 			event.widget.create_oval(self.x1_line_pt, self.y1_line_pt,
 			self.x2_line_pt, self.y2_line_pt,fill="", outline=self.color,
-			width=2)
+			width=self.width)
 
 	def unrun(self, canvas):
 		canvas.unbind("<ButtonPress-1>")
@@ -131,6 +150,9 @@ class Circle(Tool):
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
+
+	def setWidth(self, width):
+		self.width = width;
 
 class Text(Tool):
 	def __init__(self):
@@ -166,6 +188,28 @@ class Text(Tool):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		self.canvas = canvas
 
+class Bucket(Tool):
+	def left_but_down(self, event=None):
+		self.left_but = "down"
+		self.x_pos,self.y_pos = None, None
+		self.x2_line_pt = event.x
+		self.y2_line_pt = event.y
+		self.bucket_draw(event)
+
+	def bucket_draw(self, event=None):
+		event.widget.create_oval(self.x2_line_pt, self.y2_line_pt,
+		self.x2_line_pt, self.y2_line_pt,fill= self.color, outline=self.color,
+		width=self.width)
+
+	def unrun(self, canvas):
+		canvas.unbind("<ButtonPress-1>")
+
+	def run(self, canvas):
+		canvas.bind("<ButtonPress-1>", self.left_but_down)
+
+	def setWidth(self, width):
+		self.width = width*10;
+
 class Paint:
 	def __init__(self):
 		self.root = Tk()
@@ -189,8 +233,10 @@ class Paint:
 			self.tool = Rectangle()
 		elif x == 4 :
 			self.tool = Circle()
-		else :
+		elif x == 5:
 			self.tool = Text()
+		else :
+			self.tool = Bucket()
 		self.tool.run(self.drawing_area)
 
 	def makeColorButton(self, color, frame):
@@ -199,8 +245,8 @@ class Paint:
 		colorbutton.pack(side=BOTTOM, anchor=SE)
 		return colorbutton
 
-	def makeToolButton(self, frame, x, image):
-		toolbutton = Button(frame, command = lambda: self.select_tool(x))
+	def makeToolButton(self, frame, x, image, slider):
+		toolbutton = Button(frame, command = lambda: self.select_and_slider(x, slider))
 		toolbutton.configure(image = image)
 		toolbutton.pack(side=TOP, anchor=NE)
 		return toolbutton
@@ -222,16 +268,22 @@ class Paint:
 		self.circleicon = PhotoImage(file = "Icons/circle.png")
 		self.recticon = PhotoImage(file = "Icons/rectangle.png")
 		self.texticon = PhotoImage(file = "Icons/text.png")
+		self.bucketicon = PhotoImage(file = "Icons/bucket.png")
 
-		brushbutton = self.makeToolButton(self.frame, 1, self.brushicon)
+		self.sizeslider = Scale(self.frame, from_=1, to=9)
+		self.sizeslider.bind("<ButtonRelease-1>", lambda x: self.tool.setWidth(self.sizeslider.get()))
 
-		eraserbutton = self.makeToolButton(self.frame2, 2, self.erasericon)
+		brushbutton = self.makeToolButton(self.frame, 1, self.brushicon, self.sizeslider)
 
-		retbutton = self.makeToolButton(self.frame, 3, self.recticon)
+		eraserbutton = self.makeToolButton(self.frame2, 2, self.erasericon, self.sizeslider)
 
-		cirbutton = self.makeToolButton(self.frame2, 4, self.circleicon)
+		retbutton = self.makeToolButton(self.frame, 3, self.recticon, self.sizeslider)
 
-		textbutton = self.makeToolButton(self.frame, 5, self.texticon)
+		cirbutton = self.makeToolButton(self.frame2, 4, self.circleicon, self.sizeslider)
+
+		textbutton = self.makeToolButton(self.frame, 5, self.texticon, self.sizeslider)
+
+		bucketbutton = self.makeToolButton(self.frame2, 6, self.bucketicon, self.sizeslider)
 
 		redbutton = self.makeColorButton("red", self.frame)		
 
@@ -251,7 +303,13 @@ class Paint:
 
 		openbutton = Button(self.frame2, text="Open", command = self.open)
 		openbutton.configure(width = 1, height = 1)
-		openbutton.pack(side=BOTTOM, anchor=SW)
+		openbutton.pack(side=BOTTOM, anchor=SE)
+
+		self.sizeslider.pack(side=BOTTOM, anchor=SE)
+
+	def select_and_slider(self, x, slider):
+		slider.set(1)
+		self.select_tool(x)
 
 paint_application = Paint()
 
