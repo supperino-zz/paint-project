@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+import psycopg2
 import os
 import io
 from PIL import Image
@@ -210,6 +211,18 @@ class Bucket(Tool):
 	def setWidth(self, width):
 		self.width = width*10
 
+
+class PaintMapper:
+    def save(self, filename):
+        try:
+            self.conn = psycopg2.connect("dbname='paitondb' user='postgres'")
+        except:
+            print ("I am unable to connect to the database")
+
+        cur = self.conn.cursor()
+        cur.execute(" INSERT INTO drawing (name) VALUES ('%s')" % filename)
+        self.conn.commit()
+
 class Paint:
 	def __init__(self):
 		self.root = Tk()
@@ -256,6 +269,8 @@ class Paint:
 		ps = self.drawing_area.postscript(colormode='color')
 		img = Image.open(io.BytesIO(ps.encode('utf-8')))
 		img.save(self.filename)
+		self.mapper=PaintMapper()
+		self.mapper.save(self.filename)
 
 	def open(self):
 		self.filename = filedialog.askopenfilename()
