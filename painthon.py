@@ -72,7 +72,7 @@ class Brush(Tool):
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
 
 	def setWidth(self, width):
-		self.width = width;
+		self.width = width
 
 class Eraser(Tool):
 	def __init__(self):
@@ -100,7 +100,7 @@ class Eraser(Tool):
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
 
 	def setWidth(self, width):
-		self.width = width*10;
+		self.width = width*10
 
 class Rectangle(Tool):
 	def left_but_up(self, event=None):
@@ -126,7 +126,7 @@ class Rectangle(Tool):
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
 	
 	def setWidth(self, width):
-		self.width = width;
+		self.width = width
 
 class Circle(Tool):
 	def left_but_up(self, event=None):
@@ -152,7 +152,7 @@ class Circle(Tool):
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
 
 	def setWidth(self, width):
-		self.width = width;
+		self.width = width
 
 class Text(Tool):
 	def __init__(self):
@@ -208,7 +208,7 @@ class Bucket(Tool):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 
 	def setWidth(self, width):
-		self.width = width*10;
+		self.width = width*10
 
 class Paint:
 	def __init__(self):
