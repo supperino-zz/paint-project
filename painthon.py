@@ -37,6 +37,12 @@ class Tool:
 	def setColor(self, color):
 		self.color = color
 
+	def unrun(self, canvas):
+		pass
+
+	def run(self, canvas):
+		pass
+
 class Brush(Tool):
 	def motion(self, event=None):
 		self.pencil_draw(event)
@@ -47,6 +53,11 @@ class Brush(Tool):
 		if self.left_but == "down":
 			if self.x_pos is not None and self.y_pos is not None:
 				event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE, fill = self.color)
+
+	def unrun(self, canvas):
+		canvas.unbind("<Motion>")
+		canvas.unbind("<ButtonPress-1>")
+		canvas.unbind("<ButtonRelease-1>")
 
 	def run(self, canvas):
 		canvas.bind("<Motion>", self.motion)
@@ -63,6 +74,11 @@ class Eraser(Tool):
 		if self.left_but == "down":
 			if self.x_pos is not None and self.y_pos is not None:
 				event.widget.create_line(self.x_pos, self.y_pos,event.x, event.y, smooth=TRUE, fill = "white", width = 20)
+
+	def unrun(self, canvas):
+		canvas.unbind("<Motion>")
+		canvas.unbind("<ButtonPress-1>")
+		canvas.unbind("<ButtonRelease-1>")
 
 	def run(self, canvas):
 		canvas.bind("<Motion>", self.motion)
@@ -85,6 +101,10 @@ class Rectangle(Tool):
 			self.x2_line_pt, self.y2_line_pt,fill="",outline=self.color,
 			width=2)
 
+	def unrun(self, canvas):
+		canvas.unbind("<ButtonPress-1>")
+		canvas.unbind("<ButtonRelease-1>")
+
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
 		canvas.bind("<ButtonRelease-1>", self.left_but_up)
@@ -103,6 +123,10 @@ class Circle(Tool):
 			event.widget.create_oval(self.x1_line_pt, self.y1_line_pt,
 			self.x2_line_pt, self.y2_line_pt,fill="", outline=self.color,
 			width=2)
+
+	def unrun(self, canvas):
+		canvas.unbind("<ButtonPress-1>")
+		canvas.unbind("<ButtonRelease-1>")
 
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
@@ -131,8 +155,12 @@ class Text(Tool):
 	def read_text(self, event=None):
 		self.entry = Entry(event.widget,bd=0, font=("Arial",15), bg= "white", fg = self.color)
 		self.entry.place(x= event.x, y= event.y)
-		self.entry.bind("<Return>", self.display_text)
 		self.entry.focus_force()
+		self.entry.bind("<Return>", self.display_text)
+
+	def unrun(self, canvas):
+		self.entry.destroy()
+		canvas.unbind("<ButtonPress-1>")
 
 	def run(self, canvas):
 		canvas.bind("<ButtonPress-1>", self.left_but_down)
@@ -151,8 +179,8 @@ class Paint:
 		self.tool = Tool()
 		self.runGUI()
 
-
 	def select_tool(self, x):
+		self.tool.unrun(self.drawing_area)
 		if x == 1 :
 			self.tool = Brush()
 		elif x == 2 :
@@ -182,6 +210,11 @@ class Paint:
 		ps = self.drawing_area.postscript(colormode='color')
 		img = Image.open(io.BytesIO(ps.encode('utf-8')))
 		img.save(self.filename)
+
+	def open(self):
+		self.filename = filedialog.askopenfilename()
+		self.img = PhotoImage(file = self.filename)
+		self.drawing_area.create_image(0,0, image=self.img, anchor=NW)
 
 	def runGUI(self):
 		self.brushicon = PhotoImage(file = "Icons/brush.png")
@@ -215,6 +248,10 @@ class Paint:
 		savebutton = Button(self.frame, text="Save", command = self.save)
 		savebutton.configure(width = 1, height = 1)
 		savebutton.pack(side=BOTTOM, anchor=SE)
+
+		openbutton = Button(self.frame2, text="Open", command = self.open)
+		openbutton.configure(width = 1, height = 1)
+		openbutton.pack(side=BOTTOM, anchor=SW)
 
 paint_application = Paint()
 
